@@ -9,13 +9,32 @@ Templates available in this repository:
 - python3-flask
 - python3-flask-debian
 - python3-flask-armhf
-
 - python3-http
 - python3-http-debian
 - python3-http-armhf
+- python3-http-arm64v8
 
 Notes:
 - To build and deploy a function for Raspberry Pi or ARMv7 in general, use the language templates ending in *-armhf*
+
+- To build the version for ARM64v8 ([detail](https://github.com/alexellis/multiarch-templates)), example:
+
+  ```
+  export DOCKER_CLI_EXPERIMENTAL=enabled
+  export OPENFAAS_PREFIX="<your-dock-hub-id>"
+  export FN="<function name>"
+  
+  faas-cli new --lang python3-http-arm64v8 $FN
+  faas-cli build --shrinkwrap -f $FN.yml
+  
+  docker buildx create --use --name=multiarch --node=multiarch
+  docker buildx build \
+  	--platform linux/arm64 \
+  	--output "type=image,push=true" \
+  	--tag $OPENFAAS_PREFIX/$FN:latest build/$FN/
+  ```
+
+- How to change the template to support different arch: As python docker hub provide different images for different arch, you can simplily change the image in the DOCKERFILE inside the template to support a specific arch.
 
 ## Picking your template
 
